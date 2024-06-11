@@ -5,34 +5,32 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import timm
 
-# Load the ViT model
+# Definisi ViT model
 model = timm.create_model('vit_base_patch16_224', pretrained=False)
 num_features = model.head.in_features
 model.head = nn.Linear(num_features, 36)  # Change output layer to match number of classes
 model.load_state_dict(torch.load('vit_model.pth'))
 model.eval()
 
-# Transformation for the new image
 transform = transforms.Compose([
-    transforms.Resize((224, 224)),  # Resize to match ViT input size
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Normalize as per ViT requirements
 ])
 
-# Load and preprocess the new image
+# Process image yang ingin di deteksi
 image_path = 'img.png'
 image = Image.open(image_path)
 image_tensor = transform(image).unsqueeze(0)
 
-# Make prediction
+# Membuat Prediksi
 with torch.no_grad():
     output = model(image_tensor)
 
-# Get the predicted class
 predicted_class = torch.argmax(output, dim=1).item()
 print("Predicted class:", predicted_class)
 
-# Display the image and prediction
+# Hasil prediksi
 plt.imshow(image)
 plt.title(f"Predicted class: {predicted_class}")
 plt.show()

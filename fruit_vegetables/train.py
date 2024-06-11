@@ -6,21 +6,21 @@ from torch.utils.data import DataLoader
 import timm
 from tqdm import tqdm
 
-# Set device to GPU if available
+# Cek GPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f"Using device: {device}")
 
-# Set random seeds
+# Atur random seed
 torch.manual_seed(42)
 if device == 'cuda':
     torch.cuda.manual_seed(42)
 
-# Data directories
+# Penyimpanan data dari dataset
 train_dir = "data/train"
 validation_dir = "data/validation"
 test_dir = "data/test"
 
-# Data preprocessing and augmentation
+# Preprocessing Dan Augmentasi
 train_transforms = transforms.Compose([
     transforms.RandomResizedCrop(224),
     transforms.RandomHorizontalFlip(),
@@ -40,22 +40,21 @@ valid_transforms = transforms.Compose([
 train_dataset = datasets.ImageFolder(train_dir, transform=train_transforms)
 valid_dataset = datasets.ImageFolder(validation_dir, transform=valid_transforms)
 
-# Data loaders with increased batch size
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False)
 
-# Define the ViT model
+# Definisi ViT model
 model = timm.create_model('vit_base_patch16_224', pretrained=True)
 num_features = model.head.in_features
 model.head = nn.Linear(num_features, len(train_dataset.classes))
 model = model.to(device)
 
-# Loss and optimizer with learning rate scheduler
+# Loss dan optimizer dengan adam
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
-# Training function
+# Training
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=10):
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
     for epoch in range(num_epochs):
@@ -102,9 +101,9 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
 
     return history
 
-# Train the model
+# Memanggil model
 history = train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=10)
 
-# Save the model
+# Menyimpan Model
 torch.save(model.state_dict(), 'vit_model.pth')
 print("Model saved as vit_model.pth")
