@@ -1,3 +1,5 @@
+
+# import library
 import torch
 import torchvision.transforms as transforms
 import torch.nn as nn
@@ -24,17 +26,17 @@ class SimpleNet(nn.Module):
         x = self.fc2(x)
         return x
 
-# Memeriksa apakah GPU tersedia
+# pemeriksaan GPU, if not then CPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# Memuat model yang telah disimpan
+# Memuat model yang telah disimpan pada training
 model = SimpleNet()
 model.load_state_dict(torch.load('mnist_model.pth'))
 model.to(device)
 model.eval()
 
-# Transformasi untuk gambar baru
+# Transformasi untuk gambar baru sebelum masuk model
 transform = transforms.Compose([
     transforms.Grayscale(),
     transforms.Resize((28, 28)),
@@ -51,11 +53,11 @@ image_tensor = transform(image).unsqueeze(0).to(device)
 with torch.no_grad():
     output = model(image_tensor)
 
-# Mendapatkan kelas yang diprediksi
+# Mendapatkan kelas objek yang diprediksi
 _, predicted_class = torch.max(output, 1)
 print("Predicted class:", predicted_class.item())
 
-# Menampilkan gambar dan prediksi
+# Menampilkan gambar beserta hasil prediksi
 plt.imshow(image, cmap='gray')
 plt.title(f"Predicted class: {predicted_class.item()}")
 plt.show()

@@ -1,22 +1,25 @@
+
+# import library yang dipakai, khususnya framework pytorch
 import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
 
-# GPU
+# pemeriksaan GPU, if not then CPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-## Pengumpulan data
-# Transformasi untuk dataset MNIST
+## Pengumpulan data, Prepocessing ##
+# Prepocessing dengan transformasi untuk dataset (MNIST)
 transform = transforms.Compose([
-    transforms.RandomRotation(10),  # Data augmentation: rotation
-    transforms.RandomAffine(0, translate=(0.1, 0.1)),  # Data augmentation: translation
+    transforms.RandomRotation(10),  # augmentasi rotasi
+    transforms.RandomAffine(0, translate=(0.1, 0.1)),
     transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
+    transforms.Normalize((0.5,), (0.5,)) #normalisasi
 ])
 
+# pembagian data set train dan set test
 trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
@@ -26,7 +29,8 @@ testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, 
 ]))
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
 
-# menentukan fitur dan pengambilan fitur gambar
+## Menentukan fitur dan pengambilan fitur gambar ##
+# Menggunakan CNN (layer konvolusi, poling, nonlinear, fully-connected)
 class SimpleNet(nn.Module):
     def __init__(self):
         super(SimpleNet, self).__init__()
@@ -56,7 +60,7 @@ if torch.cuda.device_count() > 1:
 
 net.to(device)
 
-# Menggunakan optimizer adam
+# Menggunakan optimizer adam, loss crossentropy
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
