@@ -43,7 +43,7 @@ transform = transforms.Compose([
 ])
 
 # Memuat dan memproses gambar baru
-image_path = 'img_2.png'
+image_path = ('img_9.png')
 image = Image.open(image_path)
 image_tensor = transform(image).unsqueeze(0).to(device)
 

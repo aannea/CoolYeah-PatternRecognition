@@ -4,10 +4,11 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
 
-# Memeriksa apakah GPU tersedia
+# GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
+## Pengumpulan data
 # Transformasi untuk dataset MNIST
 transform = transforms.Compose([
     transforms.RandomRotation(10),  # Data augmentation: rotation
@@ -16,7 +17,6 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-# Memuat dataset MNIST
 trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
 
@@ -26,7 +26,7 @@ testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, 
 ]))
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=False)
 
-# Mendefinisikan jaringan neural dengan beberapa lapisan
+# menentukan fitur dan pengambilan fitur gambar
 class SimpleNet(nn.Module):
     def __init__(self):
         super(SimpleNet, self).__init__()
@@ -46,29 +46,28 @@ class SimpleNet(nn.Module):
         x = self.fc2(x)
         return x
 
+# pemilihan model
 net = SimpleNet().to(device)
 
-# Menggunakan DataParallel untuk memanfaatkan beberapa GPU
+# Menggunakan GPU
 if torch.cuda.device_count() > 1:
     print(f"Let's use {torch.cuda.device_count()} GPUs!")
     net = nn.DataParallel(net)
 
 net.to(device)
 
-# Mendefinisikan loss function dan optimizer
+# Menggunakan optimizer adam
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-# Melatih jaringan
-for epoch in range(10):  # loop melalui dataset lebih banyak kali
+# Pelatihan Model
+for epoch in range(10):
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data[0].to(device), data[1].to(device)
 
-        # Mereset gradien optimizer
         optimizer.zero_grad()
 
-        # Forward, backward, optimize
         outputs = net(inputs)
         loss = criterion(outputs, labels)
         loss.backward()
@@ -76,14 +75,13 @@ for epoch in range(10):  # loop melalui dataset lebih banyak kali
 
         running_loss += loss.item()
 
-        # Menampilkan progres setiap 200 mini-batches
-        if i % 200 == 199:  # print setiap 200 mini-batches
+        if i % 200 == 199:
             print(f"[Epoch {epoch + 1}, Batch {i + 1}] Loss: {running_loss / 200:.3f}")
             running_loss = 0.0
 
 print('Finished Training')
 
-# Menguji jaringan dengan data uji
+# Evaluasi model
 correct = 0
 total = 0
 with torch.no_grad():

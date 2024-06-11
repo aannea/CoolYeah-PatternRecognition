@@ -1,34 +1,38 @@
 import torch
+import torch.nn as nn
 from torchvision import transforms
 from PIL import Image
 import matplotlib.pyplot as plt
+import timm
 
-# Load the model
-model = torch.load('simple_cnn.pth')
-model.eval()  # Pastikan model dalam mode evaluasi
+# Load the ViT model
+model = timm.create_model('vit_base_patch16_224', pretrained=False)
+num_features = model.head.in_features
+model.head = nn.Linear(num_features, 36)  # Change output layer to match number of classes
+model.load_state_dict(torch.load('vit_model.pth'))
+model.eval()
 
-# Transformasi untuk gambar baru
+# Transformation for the new image
 transform = transforms.Compose([
-    transforms.Grayscale(),
-    transforms.Resize((28, 28)),
+    transforms.Resize((224, 224)),  # Resize to match ViT input size
     transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Normalize as per ViT requirements
 ])
 
-# Memuat dan memproses gambar baru
+# Load and preprocess the new image
 image_path = 'img.png'
 image = Image.open(image_path)
 image_tensor = transform(image).unsqueeze(0)
 
-# Membuat prediksi
+# Make prediction
 with torch.no_grad():
     output = model(image_tensor)
 
-# Mendapatkan kelas yang diprediksi
-_, predicted_class = torch.max(output, 1)
-print("Predicted class:", predicted_class.item())
+# Get the predicted class
+predicted_class = torch.argmax(output, dim=1).item()
+print("Predicted class:", predicted_class)
 
-# Menampilkan gambar dan prediksi
-plt.imshow(image, cmap='gray')
-plt.title(f"Predicted class: {predicted_class.item()}")
+# Display the image and prediction
+plt.imshow(image)
+plt.title(f"Predicted class: {predicted_class}")
 plt.show()
