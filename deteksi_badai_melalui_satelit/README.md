@@ -54,12 +54,12 @@ pengujian model.
 3. Install Dependensi
 
 4. Pelatihan Model
-   ```bash
+   ```python
    python train.py
    ```
 
 5. Testing Model
-   ```bash
+   ```python
    python test.py
    ```
 
