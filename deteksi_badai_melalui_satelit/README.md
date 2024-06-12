@@ -1,5 +1,8 @@
 # Deteksi Badai pada Permukaan Bumi Melalui Satelit
 
+![Project Logo](https://github.com/aannea/CoolYeah-PatternRecognition/blob/main/deteksi_badai_melalui_satelit/kenanih.jpeg)
+
+
 ## Deskripsi Proyek
 Proyek ini bertujuan untuk mendeteksi badai pada permukaan bumi menggunakan dataset 
 gambar satelit dengan menerapkan model Convolutional Neural Network (CNN). Proyek ini 
