@@ -1,5 +1,9 @@
 # MNIST: Klasifikasi Gambar Digit-digit Tulisan Tangan
 
+![Data1](https://github.com/aannea/CoolYeah-PatternRecognition/blob/main/MNIST/img_9.png)
+![Data2](https://github.com/aannea/CoolYeah-PatternRecognition/blob/main/MNIST/img.png)
+![Data3](https://github.com/aannea/CoolYeah-PatternRecognition/blob/main/MNIST/img_3.png)
+
 ## Deskripsi Proyek
 Proyek ini adalah implementasi model deep learning untuk mengklasifikasikan gambar digit-digit tulisan tangan. Dataset yang digunakan adalah **MNIST** yang berisi 60,000 gambar untuk data pelatihan dan 10,000 gambar untuk data pengujian, masing-masing berupa gambar grayscale yang sudah berukuran 28x28 piksel.
 
@@ -50,11 +54,11 @@ Proyek ini adalah implementasi model deep learning untuk mengklasifikasikan gamb
 3. Install Dependensi
 
 4. Pelatihan Model
-```bash
+```python
    python train_mnist.py
    ```
 5. Testing Model
-```bash
+```python
    python predict_mnist.py
    ```
 
